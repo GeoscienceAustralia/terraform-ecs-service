@@ -1,8 +1,14 @@
 dist: trusty
 sudo: required
 
+env:
+  AWS_DEFAULT_REGION: 'ap-southeast-2'
+
 services:
   - docker
+
+install:
+  - pip install awscli
 
 before_install:
 
