@@ -2,7 +2,7 @@
 
 resource "aws_alb_target_group" "default" {
   name                 = "${var.alb_name}-default"
-  port                 = 80
+  port                 = "${var.container_port}"
   protocol             = "HTTP"
   vpc_id               = "${var.vpc_id}"
   deregistration_delay = "${var.deregistration_delay}"
@@ -27,9 +27,9 @@ resource "aws_alb" "alb" {
   }
 }
 
-resource "aws_alb_listener" "https" {
+resource "aws_alb_listener" "http" {
   load_balancer_arn = "${aws_alb.alb.id}"
-  port              = "80"
+  port              = 80
   protocol          = "HTTP"
 
   default_action {
@@ -47,9 +47,9 @@ resource "aws_security_group" "alb" {
   }
 }
 
-resource "aws_security_group_rule" "https_from_anywhere" {
+resource "aws_security_group_rule" "http_from_anywhere" {
   type              = "ingress"
-  from_port         = 80
+  from_port         = 80 
   to_port           = 80
   protocol          = "TCP"
   cidr_blocks       = ["${var.allow_cidr_block}"]

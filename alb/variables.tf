@@ -7,6 +7,10 @@ variable "environment" {
   description = "The name of the environment"
 }
 
+variable "container_port" {
+  description = "The port servicing traffic on the container"
+}
+
 variable "public_subnet_ids" {
   type        = "list"
   description = "List of public subnet ids to place the loadbalancer in"

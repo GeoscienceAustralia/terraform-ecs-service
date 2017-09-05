@@ -1,1 +1,5 @@
+**/*.terraform
+**/*.tfstate*
+**/.DS_Store
 .terraform
+.pipelines/export_env_vars.sh
