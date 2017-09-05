@@ -10,4 +10,4 @@ branches:
     master
     integration
 script:
-  ./test-script.sh
+  bash ./test-script.sh
