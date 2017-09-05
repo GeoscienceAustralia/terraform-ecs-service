@@ -22,4 +22,6 @@ script:
   - docker-compose config -q
 
   # Validate terraform script
+  - terraform init
+  - terraform get
   - terraform plan
