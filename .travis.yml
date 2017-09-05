@@ -1,0 +1,13 @@
+dist: trusty
+language: python
+python:
+  - '3.6'
+git:
+  depth: 3
+  submodules: false
+branches:
+  only:
+    master
+    integration
+script:
+  ./test-script.sh
