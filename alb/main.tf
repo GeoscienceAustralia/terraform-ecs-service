@@ -14,6 +14,8 @@ resource "aws_alb_target_group" "default" {
 
   tags {
     Environment = "${var.environment}"
+    Owner       = "${var.owner}"
+    Service     = "${var.service}"
   }
 }
 
@@ -24,6 +26,8 @@ resource "aws_alb" "alb" {
 
   tags {
     Environment = "${var.environment}"
+    Owner       = "${var.owner}"
+    Service     = "${var.service}"
   }
 }
 
@@ -44,12 +48,14 @@ resource "aws_security_group" "alb" {
 
   tags {
     Environment = "${var.environment}"
+    Owner       = "${var.owner}"
+    Service     = "${var.service}"
   }
 }
 
 resource "aws_security_group_rule" "http_from_anywhere" {
   type              = "ingress"
-  from_port         = 80 
+  from_port         = 80
   to_port           = 80
   protocol          = "TCP"
   cidr_blocks       = ["${var.allow_cidr_block}"]

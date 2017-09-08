@@ -34,3 +34,11 @@ variable "allow_cidr_block" {
   default     = "0.0.0.0/0"
   description = "Specify cidr block that is allowed to access the LoadBalancer"
 }
+
+variable "owner" {
+  description = "Who to notify regarding these instances"
+}
+
+variable "service" {
+  description = "Name of service these resources are attached to"
+}
