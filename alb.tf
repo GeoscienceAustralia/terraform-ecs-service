@@ -45,6 +45,7 @@ data "aws_vpc" "default" {
 
 data "aws_security_group" "ecs_instance_security_group" {
   tags {
+    Name        = "ecs_instance_sg"
     Environment = "${var.environment}"
     Cluster     = "${var.cluster}"
   }
@@ -57,8 +58,12 @@ data "aws_subnet_ids" "public" {
   }
 }
 
+module "ecs_policy" {
+  source = "modules/ecs_policy"
+}
+
 module "alb" {
-  source = "alb"
+  source = "modules/alb"
 
   environment       = "${var.environment}"
   alb_name          = "${var.environment}-${var.cluster}-${var.service_name}"
@@ -93,10 +98,12 @@ resource "null_resource" "alb_target_group" {
   provisioner "local-exec" {
     command = <<CMD
 echo "\
-export ALB_TARGET_GROUP=${module.alb.default_alb_target_group} 
-export ALB_ROLE=/ecs/acc_ecs_lb_role
+export ALB_TARGET_GROUP=${module.alb.default_alb_target_group}
+export ALB_ROLE=/ecs/dev_ecs_lb_role
+export ECS_TASK_ROLE=${module.ecs_policy.access_to_ssm_role_arn}
 export ECS_ENTRY_CONTAINER=${var.container_name}
-export ECS_ENTRY_PORT=${var.container_port}\
+export ECS_ENTRY_PORT=${var.container_port}
+export ECS_CLUSTER=${var.cluster}\
 " > ./.pipelines/export_env_vars.sh
 CMD
   }
