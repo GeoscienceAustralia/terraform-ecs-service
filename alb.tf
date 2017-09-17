@@ -17,23 +17,27 @@ provider "aws" {
 }
 
 variable "service_name" {
-  description   = "The name of the service"
+  description = "The name of the service"
 }
 
 variable "container_name" {
-  description   = "The name of the container"
+  description = "The name of the container"
 }
 
 variable "container_port" {
-  description   = "the port of the container"
+  description = "the port of the container"
 }
 
 variable "cluster" {
-  description   = "The name of the ecs cluster"
+  description = "The name of the ecs cluster"
 }
 
 variable "environment" {
-  description   = "The name of the enviornment"
+  description = "The name of the environment"
+}
+
+variable "owner" {
+  description = "Mailing to contact with respect to these resources"
 }
 
 data "aws_vpc" "default" {
@@ -45,15 +49,17 @@ data "aws_vpc" "default" {
 
 data "aws_security_group" "ecs_instance_security_group" {
   tags {
-    Environment = "${var.environment}"
-    Cluster     = "${var.cluster}"
+    Environment   = "${var.environment}"
+    Cluster       = "${var.cluster}"
+    InstanceGroup = "default"
   }
 }
 
 data "aws_subnet_ids" "public" {
   vpc_id = "${data.aws_vpc.default.id}"
+
   tags {
-    Tier        = "Public"
+    Tier = "Public"
   }
 }
 
@@ -61,10 +67,12 @@ module "alb" {
   source = "alb"
 
   environment       = "${var.environment}"
-  alb_name          = "${var.environment}-${var.cluster}-${var.service_name}"
+  alb_name          = "${var.environment}-${var.service_name}"
   vpc_id            = "${data.aws_vpc.default.id}"
   public_subnet_ids = "${data.aws_subnet_ids.public.ids}"
   container_port    = "${var.container_port}"
+  owner             = "${var.owner}"
+  service           = "${var.service_name}"
 }
 
 # Add permissions to ECS instances to access ALB
@@ -78,11 +86,11 @@ resource "aws_security_group_rule" "alb_to_ecs" {
 }
 
 output "alb_target_group" {
-  value       = "${module.alb.default_alb_target_group}"
+  value = "${module.alb.default_alb_target_group}"
 }
 
 output "alb_dns_name" {
-  value       = "${module.alb.alb_dns_name}"
+  value = "${module.alb.alb_dns_name}"
 }
 
 resource "null_resource" "alb_target_group" {
@@ -94,9 +102,10 @@ resource "null_resource" "alb_target_group" {
     command = <<CMD
 echo "\
 export ALB_TARGET_GROUP=${module.alb.default_alb_target_group} 
-export ALB_ROLE=/ecs/acc_ecs_lb_role
+export ALB_ROLE=/ecs/${var.environment}_ecs_lb_role
 export ECS_ENTRY_CONTAINER=${var.container_name}
-export ECS_ENTRY_PORT=${var.container_port}\
+export ECS_ENTRY_PORT=${var.container_port}
+export ECS_CLUSTER_NAME=${var.cluster}\
 " > ./.pipelines/export_env_vars.sh
 CMD
   }

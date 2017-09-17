@@ -14,4 +14,5 @@ ecs-cli compose service up \
     --target-group-arn $ALB_TARGET_GROUP \
     --role $ALB_ROLE \
     --container-name $ECS_ENTRY_CONTAINER \
-    --container-port $ECS_ENTRY_PORT
+    --container-port $ECS_ENTRY_PORT \
+    --cluster $ECS_CLUSTER_NAME
