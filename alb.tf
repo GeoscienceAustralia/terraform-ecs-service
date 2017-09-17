@@ -102,7 +102,7 @@ resource "null_resource" "alb_target_group" {
     command = <<CMD
 echo "\
 export ALB_TARGET_GROUP=${module.alb.default_alb_target_group} 
-export ALB_ROLE=/ecs/dev_ecs_lb_role
+export ALB_ROLE=/ecs/${var.environment}_ecs_lb_role
 export ECS_ENTRY_CONTAINER=${var.container_name}
 export ECS_ENTRY_PORT=${var.container_port}
 export ECS_CLUSTER_NAME=${var.cluster}\

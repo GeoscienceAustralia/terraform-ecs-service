@@ -16,6 +16,7 @@ resource "aws_alb_target_group" "default" {
     Environment = "${var.environment}"
     Owner       = "${var.owner}"
     Service     = "${var.service}"
+    Cluster     = "${var.cluster}"
   }
 }
 
@@ -28,6 +29,7 @@ resource "aws_alb" "alb" {
     Environment = "${var.environment}"
     Owner       = "${var.owner}"
     Service     = "${var.service}"
+    Cluster     = "${var.cluster}"
   }
 }
 
@@ -50,6 +52,7 @@ resource "aws_security_group" "alb" {
     Environment = "${var.environment}"
     Owner       = "${var.owner}"
     Service     = "${var.service}"
+    Cluster     = "${var.cluster}"
   }
 }
 
