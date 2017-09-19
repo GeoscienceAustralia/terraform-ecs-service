@@ -14,6 +14,9 @@ resource "aws_alb_target_group" "default" {
 
   tags {
     Environment = "${var.environment}"
+    Cluster     = "${var.cluster}"
+    Service     = "${var.service_name}"
+    Created_by  = "terraform"
   }
 }
 
@@ -24,6 +27,10 @@ resource "aws_alb" "alb" {
 
   tags {
     Environment = "${var.environment}"
+    Cluster     = "${var.cluster}"
+    Service     = "${var.service_name}"
+    Created_by  = "terraform"
+    Owner       = "${var.owner}"
   }
 }
 
@@ -44,6 +51,10 @@ resource "aws_security_group" "alb" {
 
   tags {
     Environment = "${var.environment}"
+    Cluster     = "${var.cluster}"
+    Service     = "${var.service_name}"
+    Created_by  = "terraform"
+    Owner       = "${var.owner}"
   }
 }
 

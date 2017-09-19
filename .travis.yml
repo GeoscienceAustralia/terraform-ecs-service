@@ -7,6 +7,10 @@ env:
 services:
   - docker
 
+language: python
+python:
+  - "3.6"
+
 install:
   - pip install awscli
 

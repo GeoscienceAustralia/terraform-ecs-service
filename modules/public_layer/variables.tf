@@ -7,6 +7,18 @@ variable "environment" {
   description = "The name of the environment"
 }
 
+variable "cluster" {
+  description = "The name of the cluster the ecs containers are being deployed into"
+}
+
+variable "service_name" {
+  description = "The name of the service"
+}
+
+variable "owner" {
+  description = "A mailing list that owns the service"
+}
+
 variable "container_port" {
   description = "The port servicing traffic on the container"
 }

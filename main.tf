@@ -17,23 +17,27 @@ provider "aws" {
 }
 
 variable "service_name" {
-  description   = "The name of the service"
+  description = "The name of the service"
 }
 
 variable "container_name" {
-  description   = "The name of the container"
+  description = "The name of the container"
 }
 
 variable "container_port" {
-  description   = "the port of the container"
+  description = "the port of the container"
 }
 
 variable "cluster" {
-  description   = "The name of the ecs cluster"
+  description = "The name of the ecs cluster"
+}
+
+variable "owner" {
+  description = "The mailing list for who owns the service"
 }
 
 variable "environment" {
-  description   = "The name of the enviornment"
+  description = "The name of the enviornment"
 }
 
 data "aws_vpc" "default" {
@@ -43,51 +47,43 @@ data "aws_vpc" "default" {
   }
 }
 
-data "aws_security_group" "ecs_instance_security_group" {
-  tags {
-    Name        = "ecs_instance_sg"
-    Environment = "${var.environment}"
-    Cluster     = "${var.cluster}"
-  }
-}
-
 data "aws_subnet_ids" "public" {
   vpc_id = "${data.aws_vpc.default.id}"
+
   tags {
-    Tier        = "Public"
+    Tier = "Public"
   }
 }
 
 module "ecs_policy" {
   source = "modules/ecs_policy"
+
+  container_port        = "${var.container_port}"
+  alb_security_group_id = "${module.public_layer.alb_security_group_id}"
+  environment           = "${var.environment}"
+  cluster               = "${var.cluster}"
+  owner                 = "${var.owner}"
 }
 
-module "alb" {
-  source = "modules/alb"
+module "public_layer" {
+  source = "modules/public_layer"
 
   environment       = "${var.environment}"
+  cluster           = "${var.cluster}"
+  service_name      = "${var.service_name}"
   alb_name          = "${var.environment}-${var.cluster}-${var.service_name}"
   vpc_id            = "${data.aws_vpc.default.id}"
   public_subnet_ids = "${data.aws_subnet_ids.public.ids}"
   container_port    = "${var.container_port}"
-}
-
-# Add permissions to ECS instances to access ALB
-resource "aws_security_group_rule" "alb_to_ecs" {
-  type                     = "ingress"
-  from_port                = "${var.container_port}"
-  to_port                  = "${var.container_port}"
-  protocol                 = "TCP"
-  source_security_group_id = "${module.alb.alb_security_group_id}"
-  security_group_id        = "${data.aws_security_group.ecs_instance_security_group.id}"
+  owner             = "${var.owner}"
 }
 
 output "alb_target_group" {
-  value       = "${module.alb.default_alb_target_group}"
+  value = "${module.public_layer.default_alb_target_group}"
 }
 
 output "alb_dns_name" {
-  value       = "${module.alb.alb_dns_name}"
+  value = "${module.public_layer.alb_dns_name}"
 }
 
 resource "null_resource" "alb_target_group" {
@@ -98,8 +94,8 @@ resource "null_resource" "alb_target_group" {
   provisioner "local-exec" {
     command = <<CMD
 echo "\
-export ALB_TARGET_GROUP=${module.alb.default_alb_target_group}
-export ALB_ROLE=/ecs/dev_ecs_lb_role
+export ALB_TARGET_GROUP=${module.public_layer.default_alb_target_group}
+export ALB_ROLE=/ecs/${var.environment}_ecs_lb_role
 export ECS_TASK_ROLE=${module.ecs_policy.access_to_ssm_role_arn}
 export ECS_ENTRY_CONTAINER=${var.container_name}
 export ECS_ENTRY_PORT=${var.container_port}
