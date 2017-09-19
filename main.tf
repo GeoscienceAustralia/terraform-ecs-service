@@ -71,7 +71,7 @@ module "public_layer" {
   environment       = "${var.environment}"
   cluster           = "${var.cluster}"
   service_name      = "${var.service_name}"
-  alb_name          = "${var.environment}-${var.cluster}-${var.service_name}"
+  alb_name          = "${var.environment}-${var.service_name}"
   vpc_id            = "${data.aws_vpc.default.id}"
   public_subnet_ids = "${data.aws_subnet_ids.public.ids}"
   container_port    = "${var.container_port}"

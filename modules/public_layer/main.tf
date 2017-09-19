@@ -17,6 +17,7 @@ resource "aws_alb_target_group" "default" {
     Cluster     = "${var.cluster}"
     Service     = "${var.service_name}"
     Created_by  = "terraform"
+    Owner       = "${var.owner}"
   }
 }
 
