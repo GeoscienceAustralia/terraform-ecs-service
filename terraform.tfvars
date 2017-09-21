@@ -1,4 +1,4 @@
-service_name = "odc"
+service_name = "ecs-service"
 
 container_name = "web"
 

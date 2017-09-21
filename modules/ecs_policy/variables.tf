@@ -20,7 +20,7 @@ variable "owner" {
 
 variable "ssm_decrypt_key" {
   description = "Alias for the ssm decrypt key to access secure ssm parameters"
-  default = "aws/ssm"
+  default     = "aws/ssm"
 }
 
 variable "account_id" {

@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "The region that the ecs is running in"
-  default = "ap-southeast-2"
+  default     = "ap-southeast-2"
 }
 
 variable "service_name" {
